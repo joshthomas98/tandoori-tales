@@ -21,7 +21,11 @@ import saagPaneer from "../assets/images/saag-paneer.webp";
 import lambRoganJosh from "../assets/images/lamb-rogan-josh.jpg";
 import chickenBalti from "../assets/images/chicken-balti.jpg";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+  const navigateToOrderScreen = () => {
+    navigation.navigate("Order");
+  };
+
   return (
     <SafeAreaView style={tw`flex-1 bg-[#ffead8]`}>
       <ScrollView contentContainerStyle={tw`px-4`}>
@@ -132,7 +136,7 @@ const HomeScreen = () => {
           <Button
             title="View Full Menu"
             color="#FF6347"
-            onPress={() => console.log("View Menu Pressed")}
+            onPress={navigateToOrderScreen}
           />
         </View>
 
