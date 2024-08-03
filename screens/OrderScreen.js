@@ -129,31 +129,34 @@ const OrderScreen = () => {
             </View>
 
             {/* Cart summary section */}
-            <View style={tw`bg-white w-full py-2 px-4 mb-4 rounded-lg`}>
+            <View style={tw`bg-white w-full py-4 px-6 mb-4 rounded-lg`}>
               {cart.length === 0 ? (
                 <Text style={tw`text-center text-lg`}>
-                  Your cart is currently empty!
+                  Your cart is currently empty...{"\n"}Add an item to start your
+                  order.
                 </Text>
               ) : (
                 <View>
-                  <Text style={tw`text-lg`}>Items in Cart:</Text>
+                  {/* Items in Cart */}
+                  <Text style={tw`text-lg font-bold mb-2`}>Items in Cart:</Text>
                   {cart.map((item) => (
                     <View
                       key={item.id}
-                      style={tw`flex-row justify-between items-center py-2`}
+                      style={tw`flex-row justify-between items-center py-2 border-b border-gray-200`}
                     >
-                      <Text>{item.name}</Text>
+                      <Text style={tw`text-lg`}>{item.name}</Text>
 
                       <View style={tw`flex-row items-center`}>
                         <TouchableOpacity
                           onPress={() =>
                             dispatch(decreaseItemQuantityByOne(item.id))
                           }
+                          style={tw`px-2`}
                         >
-                          <Text style={tw`text-3xl text-red-500 mr-2`}>-</Text>
+                          <Text style={tw`text-3xl text-red-500`}>-</Text>
                         </TouchableOpacity>
 
-                        <Text>
+                        <Text style={tw`mx-2`}>
                           {item.quantity} x £{item.price.toFixed(2)}
                         </Text>
 
@@ -161,24 +164,42 @@ const OrderScreen = () => {
                           onPress={() =>
                             dispatch(increaseItemQuantityByOne(item.id))
                           }
+                          style={tw`px-2`}
                         >
-                          <Text style={tw`text-3xl text-green-500 ml-2 pb-1`}>
-                            +
-                          </Text>
+                          <Text style={tw`text-3xl text-green-500`}>+</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
                   ))}
-                  <Text style={tw`pt-4 text-xl`}>
-                    TOTAL: £{totalPrice.toFixed(2)}
-                  </Text>
 
-                  <TouchableOpacity
-                    style={tw`bg-blue-500 py-1 px-2 rounded-lg mt-2 w-25`}
-                    onPress={() => dispatch(clearCart())}
+                  {/* Total and Clear Cart Button */}
+                  <View
+                    style={tw`flex-row justify-between items-center py-4 border-t border-gray-200`}
                   >
-                    <Text style={tw`text-white text-center`}>Clear Cart</Text>
-                  </TouchableOpacity>
+                    <Text style={tw`text-xl font-bold`}>
+                      TOTAL: £{totalPrice.toFixed(2)}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={tw`bg-blue-500 py-1 px-4 rounded-lg`}
+                      onPress={() => dispatch(clearCart())}
+                    >
+                      <Text style={tw`text-white text-center text-lg`}>
+                        Clear Cart
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Checkout Button */}
+                  <View style={tw`mt-4`}>
+                    <TouchableOpacity
+                      style={tw`bg-green-500 py-2 px-4 w-3/4 mx-auto rounded-lg`}
+                    >
+                      <Text style={tw`text-white text-center text-lg`}>
+                        CHECKOUT
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             </View>
