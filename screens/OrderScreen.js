@@ -137,11 +137,13 @@ const OrderScreen = () => {
                     >
                       <Text>{item.name}</Text>
                       <Text>
-                        {item.quantity} x ${item.price}
+                        {item.quantity} x £{item.price}
                       </Text>
                     </View>
                   ))}
-                  <Text style={tw`pt-4 text-xl`}>TOTAL: ${totalPrice}</Text>
+                  <Text style={tw`pt-4 text-xl`}>
+                    TOTAL: £{totalPrice.toFixed(2)}
+                  </Text>
 
                   <TouchableOpacity
                     style={tw`bg-blue-500 py-1 px-2 rounded-lg mt-2 w-25`}
@@ -176,7 +178,7 @@ const OrderScreen = () => {
                       <Text style={tw`text-lg font-bold`}>{item.name}</Text>
                       <Text style={tw`pt-2`}>{item.description}</Text>
                       <Text style={tw`pt-2 text-sm text-gray-600`}>
-                        ${item.price.toFixed(2)}
+                        £{item.price.toFixed(2)}
                       </Text>
                       <TouchableOpacity
                         style={tw`bg-blue-500 py-1 px-2 rounded-lg mt-2`}
