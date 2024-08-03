@@ -11,12 +11,26 @@ import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemToCart, clearCart } from "../redux/cart";
+
+// Utility function to convert price strings to numbers
+const parsePrice = (priceString) => {
+  // Ensure priceString is defined and convert it to a number
+  if (typeof priceString === "string") {
+    // Remove non-numeric characters (like £ or $) and parse the result as a float
+    return parseFloat(priceString.replace(/[^0-9.-]+/g, "")) || 0; // Default to 0 if conversion fails
+  }
+  return 0; // Default to 0 if priceString is not a string
+};
 
 const OrderScreen = () => {
+  const cart = useSelector((state) => state.cart.items); // Access items directly
+  const dispatch = useDispatch();
+
   const [isClicked, setIsClicked] = useState("Delivery");
   const [menu, setMenu] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState({});
-  const [basket, setBasket] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -24,7 +38,15 @@ const OrderScreen = () => {
     fetch("http://localhost:8000/view-full-menu")
       .then((response) => response.json())
       .then((data) => {
-        setMenu(data);
+        // Convert price strings to numbers
+        const updatedData = data.map((category) => ({
+          ...category,
+          items: category.items.map((item) => ({
+            ...item,
+            price: parsePrice(item.price), // Convert price to number
+          })),
+        }));
+        setMenu(updatedData);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -40,9 +62,11 @@ const OrderScreen = () => {
     }));
   };
 
-  const addToBasket = (item) => {
-    setBasket((prevState) => [...prevState, item]);
-  };
+  // Calculate total price
+  const totalPrice = cart.reduce(
+    (total, item) => total + (item.price || 0) * (item.quantity || 0),
+    0
+  );
 
   return (
     <SafeAreaView style={tw`flex-1 bg-[#ffead8]`}>
@@ -53,6 +77,7 @@ const OrderScreen = () => {
       ) : (
         <ScrollView>
           <View style={tw`flex-1 pt-3 justify-center items-center`}>
+            {/* Order type and cart section */}
             <View style={tw`flex-row mb-4`}>
               <TouchableOpacity
                 style={tw`${
@@ -95,6 +120,40 @@ const OrderScreen = () => {
                 </Text>
               </TouchableOpacity>
             </View>
+
+            {/* Cart summary section */}
+            <View style={tw`bg-white w-full py-2 px-4 mb-4 rounded-lg`}>
+              {cart.length === 0 ? (
+                <Text style={tw`text-center text-lg`}>
+                  Your cart is currently empty!
+                </Text>
+              ) : (
+                <View>
+                  <Text style={tw`text-lg`}>Items in Cart:</Text>
+                  {cart.map((item) => (
+                    <View
+                      key={item.id}
+                      style={tw`flex-row justify-between items-center py-2`}
+                    >
+                      <Text>{item.name}</Text>
+                      <Text>
+                        {item.quantity} x ${item.price}
+                      </Text>
+                    </View>
+                  ))}
+                  <Text style={tw`pt-4 text-xl`}>TOTAL: ${totalPrice}</Text>
+
+                  <TouchableOpacity
+                    style={tw`bg-blue-500 py-1 px-2 rounded-lg mt-2 w-25`}
+                    onPress={() => dispatch(clearCart())}
+                  >
+                    <Text style={tw`text-white text-center`}>Clear Cart</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
+            {/* Item select section */}
             {menu.map((category) => (
               <View key={category._id} style={tw`w-full px-4`}>
                 <TouchableOpacity
@@ -115,13 +174,22 @@ const OrderScreen = () => {
                       style={tw`bg-white py-2 px-4 mb-2 rounded-lg`}
                     >
                       <Text style={tw`text-lg font-bold`}>{item.name}</Text>
-                      <Text>{item.description}</Text>
-                      <Text style={tw`text-sm text-gray-600`}>
-                        ${item.price}
+                      <Text style={tw`pt-2`}>{item.description}</Text>
+                      <Text style={tw`pt-2 text-sm text-gray-600`}>
+                        ${item.price.toFixed(2)}
                       </Text>
                       <TouchableOpacity
                         style={tw`bg-blue-500 py-1 px-2 rounded-lg mt-2`}
-                        onPress={() => addToBasket(item)}
+                        onPress={() =>
+                          dispatch(
+                            addItemToCart({
+                              id: item._id,
+                              name: item.name,
+                              price: item.price,
+                              quantity: 1,
+                            })
+                          )
+                        }
                       >
                         <Text style={tw`text-white text-center`}>
                           Add to Basket
