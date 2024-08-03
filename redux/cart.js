@@ -22,11 +22,13 @@ export const cartSlice = createSlice({
         state.items.push({ id, name, price, quantity });
       }
     },
+
     // Remove an item from the cart by ID
     removeItemFromCart: (state, action) => {
       const id = action.payload;
       state.items = state.items.filter((item) => item.id !== id);
     },
+
     // Update the quantity of an existing item
     updateItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
@@ -35,6 +37,29 @@ export const cartSlice = createSlice({
         existingItem.quantity = quantity;
       }
     },
+
+    // Increase item quantity by 1
+    increaseItemQuantityByOne: (state, action) => {
+      const id = action.payload;
+      const existingItem = state.items.find((item) => item.id === id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      }
+    },
+
+    // Decrease item quantity by 1
+    decreaseItemQuantityByOne: (state, action) => {
+      const id = action.payload;
+      const existingItem = state.items.find((item) => item.id === id);
+      if (existingItem) {
+        if (existingItem.quantity > 1) {
+          existingItem.quantity -= 1;
+        } else {
+          state.items = state.items.filter((item) => item.id !== id);
+        }
+      }
+    },
+
     // Clear all items from the cart
     clearCart: (state) => {
       state.items = [];
@@ -47,6 +72,8 @@ export const {
   addItemToCart,
   removeItemFromCart,
   updateItemQuantity,
+  increaseItemQuantityByOne,
+  decreaseItemQuantityByOne,
   clearCart,
 } = cartSlice.actions;
 

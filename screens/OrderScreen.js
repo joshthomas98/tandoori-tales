@@ -12,7 +12,14 @@ import tw from "twrnc";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart, clearCart } from "../redux/cart";
+import {
+  addItemToCart,
+  removeItemFromCart,
+  updateItemQuantity,
+  increaseItemQuantityByOne,
+  decreaseItemQuantityByOne,
+  clearCart,
+} from "../redux/cart";
 
 // Utility function to convert price strings to numbers
 const parsePrice = (priceString) => {
@@ -136,9 +143,30 @@ const OrderScreen = () => {
                       style={tw`flex-row justify-between items-center py-2`}
                     >
                       <Text>{item.name}</Text>
-                      <Text>
-                        {item.quantity} x £{item.price}
-                      </Text>
+
+                      <View style={tw`flex-row items-center`}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            dispatch(decreaseItemQuantityByOne(item.id))
+                          }
+                        >
+                          <Text style={tw`text-3xl text-red-500 mr-2`}>-</Text>
+                        </TouchableOpacity>
+
+                        <Text>
+                          {item.quantity} x £{item.price.toFixed(2)}
+                        </Text>
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            dispatch(increaseItemQuantityByOne(item.id))
+                          }
+                        >
+                          <Text style={tw`text-3xl text-green-500 ml-2 pb-1`}>
+                            +
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   ))}
                   <Text style={tw`pt-4 text-xl`}>
